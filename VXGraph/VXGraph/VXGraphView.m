@@ -10,16 +10,30 @@
 #import "VXGraphView.h"
 
 @interface VXGraphView ()
-    @property NSGradient* backgroundGradient;
+@property NSGradient* backgroundGradient;
+@property CAShapeLayer *circleLayer;
 @end
 
 @implementation VXGraphView
 
-- (void) awakeFromNib
+- (void)awakeFromNib
 {
     // Setup gradient to draw the background of the view
     [self setupBackgroundGradient];
+    
+    CGRect smallBounds = CGRectMake(self.bounds.origin.x+20, self.bounds.origin.y+20, self.bounds.size.width/2, self.bounds.size.height/2);
+    CGPathRef path = CGPathCreateWithEllipseInRect(smallBounds, NULL);
+    
+    _circleLayer = [CAShapeLayer new];
+    _circleLayer.path = path;
+    _circleLayer.fillColor = [[NSColor clearColor] CGColor];
+    _circleLayer.strokeColor = [[NSColor redColor] CGColor];
+    _circleLayer.lineWidth = 5.0;
+    _circleLayer.strokeEnd = 0.0;
+    
+    [self.layer addSublayer:_circleLayer];
 }
+
 
 - (void)drawRect:(NSRect)dirtyRect {
     [super drawRect:dirtyRect];
@@ -82,11 +96,13 @@
 
 - (void)startAnimation
 {
-    CABasicAnimation *pathAnimation = [CABasicAnimation animationWithKeyPath:@"strokeEnd"];
-    pathAnimation.duration = 10.0;
-    pathAnimation.fromValue = [NSNumber numberWithFloat:0.0f];
-    pathAnimation.toValue = [NSNumber numberWithFloat:1.0f];
-    [self.layer addAnimation:pathAnimation forKey:@"strokeEnd"];
+    CABasicAnimation *circleAnimation = [CABasicAnimation animationWithKeyPath:@"strokeEnd"];
+    circleAnimation.duration = 10.0f;
+    circleAnimation.fromValue = [NSNumber numberWithFloat:0.0f];
+    circleAnimation.toValue = [NSNumber numberWithFloat:1.0f];
+    circleAnimation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+    _circleLayer.strokeEnd = 1.0f;
+    [_circleLayer addAnimation:circleAnimation forKey:@"strokeEnd"];
 }
 
 @end
