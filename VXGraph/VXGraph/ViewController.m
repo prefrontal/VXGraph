@@ -28,10 +28,11 @@
 }
 
 - (IBAction)action1:(id)sender {
-    [_mainGraph startAnimation];
+    [_mainGraph startAnimation1];
 }
 
 - (IBAction)action2:(id)sender {
+    [_mainGraph startAnimation2];
 }
 
 @end

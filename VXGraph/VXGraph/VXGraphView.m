@@ -11,35 +11,69 @@
 
 @interface VXGraphView ()
 @property NSGradient* backgroundGradient;
-@property CAShapeLayer *circleLayer;
+@property CAShapeLayer *dataPlotLayer;
+
+@property double XAXIS_OFFSET;
+@property double YAXIS_OFFSET;
+
 @end
 
 @implementation VXGraphView
 
 - (void)awakeFromNib
 {
+    // Initialize member variables
+    _XAXIS_OFFSET = 50;
+    _YAXIS_OFFSET = 50;
+    
     // Setup gradient to draw the background of the view
     [self setupBackgroundGradient];
     
-    CGRect smallBounds = CGRectMake(self.bounds.origin.x+20, self.bounds.origin.y+20, self.bounds.size.width/2, self.bounds.size.height/2);
-    CGPathRef path = CGPathCreateWithEllipseInRect(smallBounds, NULL);
+    // Graph boundaries
+    //double xmin = _XAXIS_OFFSET;
+    //double ymin = _YAXIS_OFFSET;
+    // Everything is normalized to the maximum x-value
+    double xmax = self.bounds.size.width - _XAXIS_OFFSET;
+    //double ymax = self.bounds.size.height - _YAXIS_OFFSET;
+
+    //CGRect smallBounds = CGRectMake(self.bounds.origin.x+20, self.bounds.origin.y+20, self.bounds.size.width/2, self.bounds.size.height/2);
+    //CGPathRef path = CGPathCreateWithEllipseInRect(smallBounds, NULL);
     
-    _circleLayer = [CAShapeLayer new];
-    _circleLayer.path = path;
-    _circleLayer.fillColor = [[NSColor clearColor] CGColor];
-    _circleLayer.strokeColor = [[NSColor redColor] CGColor];
-    _circleLayer.lineWidth = 5.0;
-    _circleLayer.strokeEnd = 0.0;
+    CGMutablePathRef path = CGPathCreateMutable();
+    // Segment 1
+    CGPathMoveToPoint (path, NULL, _XAXIS_OFFSET, _YAXIS_OFFSET);
+    CGPathAddLineToPoint (path, NULL, (858.0/880.0)*xmax, (160.0/880.0)*xmax);
+    CGPathAddLineToPoint (path, NULL, xmax, _YAXIS_OFFSET);
+    // Segment 2
+    CGPathMoveToPoint (path, NULL, _XAXIS_OFFSET, _YAXIS_OFFSET);
+    CGPathAddLineToPoint (path, NULL, (100.0/880.0)*xmax, (245.0/880.0)*xmax);
+    CGPathAddLineToPoint (path, NULL, xmax, _YAXIS_OFFSET);
+    // Segment 3
+    CGPathMoveToPoint (path, NULL, _XAXIS_OFFSET, _YAXIS_OFFSET);
+    CGPathAddLineToPoint (path, NULL, (277.0/880.0)*xmax, (406.0/880.0)*xmax);
+    CGPathAddLineToPoint (path, NULL, xmax, _YAXIS_OFFSET);
+    // Segment 4
+    CGPathMoveToPoint (path, NULL, _XAXIS_OFFSET, _YAXIS_OFFSET);
+    CGPathAddLineToPoint (path, NULL, (580.0/880.0)*xmax, (419.0/880.0)*xmax);
+    CGPathAddLineToPoint (path, NULL, xmax, _YAXIS_OFFSET);
+    // Segment 5
+    CGPathMoveToPoint (path, NULL, _XAXIS_OFFSET, _YAXIS_OFFSET);
+    CGPathAddLineToPoint (path, NULL, (723.0/880.0)*xmax, (337.0/880.0)*xmax);
+    CGPathAddLineToPoint (path, NULL, xmax, _YAXIS_OFFSET);
     
-    [self.layer addSublayer:_circleLayer];
+    _dataPlotLayer = [CAShapeLayer new];
+    _dataPlotLayer.path = path;
+    _dataPlotLayer.fillColor = [[NSColor clearColor] CGColor];
+    _dataPlotLayer.strokeColor = [[NSColor redColor] CGColor];
+    _dataPlotLayer.lineWidth = 3.0;
+    _dataPlotLayer.strokeEnd = 0.0;
+    
+    [self.layer addSublayer:_dataPlotLayer];
 }
 
 
 - (void)drawRect:(NSRect)dirtyRect {
     [super drawRect:dirtyRect];
-
-    double YAXIS_OFFSET = 50.0;
-    double XAXIS_OFFSET = 50.0;
     
     // Background Fill
     // Draw a basic gradient for the view background
@@ -58,16 +92,16 @@
 
     // Draw Y-Axis
     NSBezierPath *yaxis = [NSBezierPath bezierPath];
-    [yaxis moveToPoint:NSMakePoint(NSMinX([self bounds])+YAXIS_OFFSET, NSMinY([self bounds])+YAXIS_OFFSET)];
-    [yaxis lineToPoint:NSMakePoint(NSMinX([self bounds])+YAXIS_OFFSET, NSMaxY([self bounds])-YAXIS_OFFSET)];
+    [yaxis moveToPoint:NSMakePoint(NSMinX([self bounds])+_YAXIS_OFFSET, NSMinY([self bounds])+_YAXIS_OFFSET)];
+    [yaxis lineToPoint:NSMakePoint(NSMinX([self bounds])+_YAXIS_OFFSET, NSMaxY([self bounds])-_YAXIS_OFFSET)];
     [border setLineWidth:2.0];
     [[NSColor whiteColor] set];
     [yaxis stroke];
 
     // Draw X-Axis
     NSBezierPath *xaxis = [NSBezierPath bezierPath];
-    [xaxis moveToPoint:NSMakePoint(NSMinX([self bounds])+XAXIS_OFFSET, NSMinY([self bounds])+XAXIS_OFFSET)];
-    [xaxis lineToPoint:NSMakePoint(NSMaxX([self bounds])-XAXIS_OFFSET, NSMinY([self bounds])+XAXIS_OFFSET)];
+    [xaxis moveToPoint:NSMakePoint(NSMinX([self bounds])+_XAXIS_OFFSET, NSMinY([self bounds])+_XAXIS_OFFSET)];
+    [xaxis lineToPoint:NSMakePoint(NSMaxX([self bounds])-_XAXIS_OFFSET, NSMinY([self bounds])+_XAXIS_OFFSET)];
     [border setLineWidth:2.0];
     [[NSColor whiteColor] set];
     [xaxis stroke];
@@ -94,15 +128,42 @@
     self.backgroundGradient = gradient;
 }
 
-- (void)startAnimation
+- (void)startAnimation1
 {
     CABasicAnimation *circleAnimation = [CABasicAnimation animationWithKeyPath:@"strokeEnd"];
-    circleAnimation.duration = 10.0f;
+    circleAnimation.duration = 4.0f;
     circleAnimation.fromValue = [NSNumber numberWithFloat:0.0f];
     circleAnimation.toValue = [NSNumber numberWithFloat:1.0f];
     circleAnimation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
-    _circleLayer.strokeEnd = 1.0f;
-    [_circleLayer addAnimation:circleAnimation forKey:@"strokeEnd"];
+    _dataPlotLayer.strokeEnd = 1.0f;
+    [_dataPlotLayer addAnimation:circleAnimation forKey:@"strokeEnd"];
+}
+
+- (void)startAnimation2
+{
+    // create a CGPath that implements two arcs (a bounce)
+    CGMutablePathRef thePath = CGPathCreateMutable();
+    CGPathMoveToPoint(thePath,NULL,0.0,0.0);
+    CGPathAddCurveToPoint(thePath,NULL,74.0,500.0,
+                          320.0,500.0,
+                          320.0,74.0);
+    CGPathAddCurveToPoint(thePath,NULL,320.0,500.0,
+                          566.0,500.0,
+                          566.0,74.0);
+    CGPathAddCurveToPoint(thePath,NULL,246.0,500.0,
+                          246.0,500.0,
+                          0.0,0.0);
+    
+    CAKeyframeAnimation *theAnimation;
+    
+    // Create the animation object, specifying the position property as the key path.
+    theAnimation=[CAKeyframeAnimation animationWithKeyPath:@"position"];
+    theAnimation.path=thePath;
+    theAnimation.duration=5.0;
+    
+    // Add the animation to the layer.
+    [_dataPlotLayer addAnimation:theAnimation forKey:@"position"];
+
 }
 
 @end

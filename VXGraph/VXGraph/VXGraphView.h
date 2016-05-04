@@ -10,6 +10,7 @@
 
 @interface VXGraphView : NSView
 
-- (void)startAnimation;
+- (void)startAnimation1;
+- (void)startAnimation2;
 
 @end
