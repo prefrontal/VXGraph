@@ -10,6 +10,7 @@
 #import "VXGraphView.h"
 
 @interface VXGraphView ()
+
 @property NSGradient* backgroundGradient;
 @property CAShapeLayer *dataPlotLayer;
 
@@ -18,7 +19,11 @@
 
 @end
 
+// --------------------------------------------------------------------------
+
 @implementation VXGraphView
+
+@synthesize graphData;
 
 - (void)awakeFromNib
 {
@@ -28,16 +33,9 @@
     
     // Setup gradient to draw the background of the view
     [self setupBackgroundGradient];
-    
-    // Graph boundaries
-    //double xmin = _XAXIS_OFFSET;
-    //double ymin = _YAXIS_OFFSET;
+
     // Everything is normalized to the maximum x-value
     double xmax = self.bounds.size.width - _XAXIS_OFFSET;
-    //double ymax = self.bounds.size.height - _YAXIS_OFFSET;
-
-    //CGRect smallBounds = CGRectMake(self.bounds.origin.x+20, self.bounds.origin.y+20, self.bounds.size.width/2, self.bounds.size.height/2);
-    //CGPathRef path = CGPathCreateWithEllipseInRect(smallBounds, NULL);
     
     CGMutablePathRef path = CGPathCreateMutable();
     // Segment 1
@@ -127,6 +125,12 @@
 
     self.backgroundGradient = gradient;
 }
+
+// -- Graph data methods ------------------------------------------------------
+
+
+
+// -- Random methods ----------------------------------------------------------
 
 - (void)startAnimation1
 {

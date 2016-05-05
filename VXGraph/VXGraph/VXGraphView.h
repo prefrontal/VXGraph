@@ -13,4 +13,6 @@
 - (void)startAnimation1;
 - (void)startAnimation2;
 
+@property (nonatomic,retain) NSArray* graphData;
+
 @end
