@@ -23,7 +23,16 @@
 
 @implementation VXGraphView
 
+// -- Getters/Setters -------------------------------------------------------
+
 @synthesize graphData;
+
+- (void)setGraphData:(NSArray*)newData
+{
+    graphData = newData;
+}
+
+// -- Initialization --------------------------------------------------------
 
 - (void)awakeFromNib
 {
