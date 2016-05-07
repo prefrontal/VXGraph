@@ -6,6 +6,8 @@
 //  Copyright © 2016 Voxelwise. All rights reserved.
 //
 
+#import "VXGraphData.h"
+
 #import <Cocoa/Cocoa.h>
 
 @interface VXGraphView : NSView
@@ -13,6 +15,6 @@
 - (void)startAnimation1;
 - (void)startAnimation2;
 
-@property (nonatomic,retain) NSArray* graphData;
+@property (nonatomic,retain) VXGraphData* graphData;
 
 @end

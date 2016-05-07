@@ -19,18 +19,7 @@
 
 @end
 
-// --------------------------------------------------------------------------
-
 @implementation VXGraphView
-
-// -- Getters/Setters -------------------------------------------------------
-
-@synthesize graphData;
-
-- (void)setGraphData:(NSArray*)newData
-{
-    graphData = newData;
-}
 
 // -- Initialization --------------------------------------------------------
 
@@ -114,6 +103,11 @@
     [xaxis stroke];
 
     // Plotting stuff...
+    double xDataMinimum = [[_graphData.xData valueForKeyPath: @"@min.self"] doubleValue];
+    double xDataMaximum = [[_graphData.xData valueForKeyPath: @"@max.self"] doubleValue];
+    double yDataMinimum = [[_graphData.yData valueForKeyPath: @"@min.self"] doubleValue];
+    double yDataMaximum = [[_graphData.yData valueForKeyPath: @"@max.self"] doubleValue];
+
 }
 
 // -- Methods to help with drawing ---------------------------------------------

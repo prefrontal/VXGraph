@@ -6,6 +6,7 @@
 //  Copyright © 2016 Voxelwise. All rights reserved.
 //
 
+#import "VXGraphData.h"
 #import "VXGraphView.h"
 #import "ViewController.h"
 
@@ -19,6 +20,12 @@
     [super viewDidLoad];
 
     // Do any additional setup after loading the view.
+
+    // Add data to the graph
+    VXGraphData* data = [VXGraphData new];
+    [data setXData:@[@1,@2,@3,@4]];
+    [data setYData:@[@1,@2,@3,@4]];
+    [_mainGraph setGraphData:data];
 }
 
 - (void)setRepresentedObject:(id)representedObject {

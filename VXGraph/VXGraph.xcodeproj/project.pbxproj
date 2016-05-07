@@ -13,6 +13,7 @@
 		0840FCF71CD7209000CC752F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0840FCF61CD7209000CC752F /* Assets.xcassets */; };
 		0840FCFA1CD7209000CC752F /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0840FCF81CD7209000CC752F /* Main.storyboard */; };
 		0840FD031CD721CF00CC752F /* VXGraphView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0840FD021CD721CF00CC752F /* VXGraphView.m */; };
+		085E8A8D1CDDBE1000F0754E /* VXGraphData.m in Sources */ = {isa = PBXBuildFile; fileRef = 085E8A8C1CDDBE1000F0754E /* VXGraphData.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -27,6 +28,8 @@
 		0840FCFB1CD7209000CC752F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		0840FD011CD721CF00CC752F /* VXGraphView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VXGraphView.h; sourceTree = "<group>"; };
 		0840FD021CD721CF00CC752F /* VXGraphView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VXGraphView.m; sourceTree = "<group>"; };
+		085E8A8B1CDDBE1000F0754E /* VXGraphData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VXGraphData.h; sourceTree = "<group>"; };
+		085E8A8C1CDDBE1000F0754E /* VXGraphData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VXGraphData.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -63,6 +66,8 @@
 				0840FCEE1CD7209000CC752F /* AppDelegate.m */,
 				0840FCF31CD7209000CC752F /* ViewController.h */,
 				0840FCF41CD7209000CC752F /* ViewController.m */,
+				085E8A8B1CDDBE1000F0754E /* VXGraphData.h */,
+				085E8A8C1CDDBE1000F0754E /* VXGraphData.m */,
 				0840FD011CD721CF00CC752F /* VXGraphView.h */,
 				0840FD021CD721CF00CC752F /* VXGraphView.m */,
 				0840FCF61CD7209000CC752F /* Assets.xcassets */,
@@ -154,6 +159,7 @@
 				0840FCF21CD7209000CC752F /* main.m in Sources */,
 				0840FCEF1CD7209000CC752F /* AppDelegate.m in Sources */,
 				0840FD031CD721CF00CC752F /* VXGraphView.m in Sources */,
+				085E8A8D1CDDBE1000F0754E /* VXGraphData.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -295,6 +301,7 @@
 				0840FD001CD7209000CC752F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
