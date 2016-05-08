@@ -13,4 +13,10 @@
 @property (nonatomic,retain) NSArray* xData;
 @property (nonatomic,retain) NSArray* yData;
 
+-(double)getXMaximum;
+-(double)getXMinimum;
+
+-(double)getYMaximum;
+-(double)getYMinimum;
+
 @end
