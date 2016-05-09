@@ -71,51 +71,23 @@
 - (void)drawRect:(NSRect)dirtyRect {
     [super drawRect:dirtyRect];
 
+    // Draw a basic gradient for the view background
+    [self.backgroundGradient drawInRect:self.bounds angle:90.0];
+
+    // Plotting Setup
     double graphBorderLeft = NSMinX([self bounds]) + _YAXIS_OFFSET;
     double graphBorderRight = NSMaxX([self bounds]) - _XAXIS_OFFSET;
     double graphBorderTop = NSMaxY([self bounds]) - _YAXIS_OFFSET;
     double graphBorderBottom = NSMinY([self bounds]) + _YAXIS_OFFSET;
 
-    // Background Fill
-    // Draw a basic gradient for the view background
-    [self.backgroundGradient drawInRect:self.bounds angle:90.0];
-
-    // Border Definition
-    NSBezierPath *border = [NSBezierPath bezierPath];
-    [border moveToPoint:NSMakePoint(NSMinX([self bounds]), NSMinY([self bounds]))];
-    [border lineToPoint:NSMakePoint(NSMinX([self bounds]), NSMaxY([self bounds]))];
-    [border lineToPoint:NSMakePoint(NSMaxX([self bounds]), NSMaxY([self bounds]))];
-    [border lineToPoint:NSMakePoint(NSMaxX([self bounds]), NSMinY([self bounds]))];
-    [border lineToPoint:NSMakePoint(NSMinX([self bounds]), NSMinY([self bounds]))];
-    [border setLineWidth:4.0];
-    [[NSColor grayColor] set];
-    [border stroke];
-
-    // Draw Y-Axis
-    NSBezierPath *yaxis = [NSBezierPath bezierPath];
-    [yaxis moveToPoint:NSMakePoint(graphBorderLeft, graphBorderBottom)];
-    [yaxis lineToPoint:NSMakePoint(graphBorderLeft, graphBorderTop)];
-    [border setLineWidth:2.0];
-    [[NSColor whiteColor] set];
-    [yaxis stroke];
-
-    // Draw X-Axis
-    NSBezierPath *xaxis = [NSBezierPath bezierPath];
-    [xaxis moveToPoint:NSMakePoint(graphBorderLeft, graphBorderBottom)];
-    [xaxis lineToPoint:NSMakePoint(graphBorderRight, graphBorderBottom)];
-    [border setLineWidth:2.0];
-    [[NSColor whiteColor] set];
-    [xaxis stroke];
-
-    // Plotting Setup
     double xDataMinimum = [_graphData getXMinimum];
     double xDataMaximum = [_graphData getXMaximum];
     double yDataMinimum = [_graphData getYMinimum];
     double yDataMaximum = [_graphData getYMaximum];
 
     // Create data path
-    double xScaleFactor = (graphBorderRight - graphBorderLeft) / (xDataMaximum - 0);
-    double yScaleFactor = (graphBorderTop - graphBorderBottom) / (yDataMaximum - 0);
+    double xScaleFactor = (graphBorderRight - graphBorderLeft) / (xDataMaximum - xDataMinimum);
+    double yScaleFactor = (graphBorderTop - graphBorderBottom) / (yDataMaximum - yDataMinimum);
 
     CGMutablePathRef path = CGPathCreateMutable();
 
@@ -126,25 +98,63 @@
 
         if (i == 0)
         {
-            CGPathMoveToPoint (path, NULL, x * xScaleFactor + _XAXIS_OFFSET, y * yScaleFactor + _YAXIS_OFFSET);
+            CGPathMoveToPoint (path, NULL, (x-xDataMinimum) * xScaleFactor + _XAXIS_OFFSET, (y-yDataMinimum) * yScaleFactor + _YAXIS_OFFSET);
             continue;
         }
 
-        CGPathAddLineToPoint (path, NULL, x * xScaleFactor + _XAXIS_OFFSET, y * yScaleFactor + _YAXIS_OFFSET);
+        CGPathAddLineToPoint (path, NULL, (x-xDataMinimum) * xScaleFactor + _XAXIS_OFFSET, (y-yDataMinimum) * yScaleFactor + _YAXIS_OFFSET);
     }
 
     _dataPlotLayer = [CAShapeLayer new];
     _dataPlotLayer.path = path;
     _dataPlotLayer.fillColor = [[NSColor clearColor] CGColor];
     _dataPlotLayer.strokeColor = [[NSColor redColor] CGColor];
-    _dataPlotLayer.lineWidth = 3.0;
+    _dataPlotLayer.lineWidth = 2.0;
     _dataPlotLayer.strokeEnd = 1.0;
 
     [self.layer addSublayer:_dataPlotLayer];
 
+    // Draw Y-Axis
+    NSBezierPath *yaxis = [NSBezierPath bezierPath];
+    [yaxis moveToPoint:NSMakePoint((0.0-xDataMinimum) * xScaleFactor + _YAXIS_OFFSET, graphBorderBottom)];
+    [yaxis lineToPoint:NSMakePoint((0.0-xDataMinimum) * xScaleFactor + _YAXIS_OFFSET, graphBorderTop)];
+    [yaxis setLineWidth:2.0];
+    [[NSColor grayColor] set];
+    [yaxis stroke];
+
+    // Draw X-Axis
+    NSBezierPath *xaxis = [NSBezierPath bezierPath];
+    [xaxis moveToPoint:NSMakePoint(graphBorderLeft, (0.0-yDataMinimum) * yScaleFactor + _YAXIS_OFFSET)];
+    [xaxis lineToPoint:NSMakePoint(graphBorderRight, (0.0-yDataMinimum) * yScaleFactor + _YAXIS_OFFSET)];
+    [yaxis setLineWidth:2.0];
+    [[NSColor grayColor] set];
+    [xaxis stroke];
+
     // Draw Y-Axis Ticks
 
     // Draw X-Axis Ticks
+
+    // Graph Border Definition
+    NSBezierPath *graphBorder = [NSBezierPath bezierPath];
+    [graphBorder moveToPoint:NSMakePoint(graphBorderLeft, graphBorderBottom)];
+    [graphBorder lineToPoint:NSMakePoint(graphBorderLeft, graphBorderTop)];
+    [graphBorder lineToPoint:NSMakePoint(graphBorderRight, graphBorderTop)];
+    [graphBorder lineToPoint:NSMakePoint(graphBorderRight, graphBorderBottom)];
+    [graphBorder lineToPoint:NSMakePoint(graphBorderLeft, graphBorderBottom)];
+    [graphBorder setLineWidth:1.0];
+    [[NSColor whiteColor] set];
+    [graphBorder stroke];
+
+    // Outer Border Definition
+    NSBezierPath *border = [NSBezierPath bezierPath];
+    [border moveToPoint:NSMakePoint(NSMinX([self bounds]), NSMinY([self bounds]))];
+    [border lineToPoint:NSMakePoint(NSMinX([self bounds]), NSMaxY([self bounds]))];
+    [border lineToPoint:NSMakePoint(NSMaxX([self bounds]), NSMaxY([self bounds]))];
+    [border lineToPoint:NSMakePoint(NSMaxX([self bounds]), NSMinY([self bounds]))];
+    [border lineToPoint:NSMakePoint(NSMinX([self bounds]), NSMinY([self bounds]))];
+    [border setLineWidth:4.0];
+    [[NSColor grayColor] set];
+    [border stroke];
 
 }
 

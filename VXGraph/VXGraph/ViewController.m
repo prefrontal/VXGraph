@@ -23,8 +23,8 @@
 
     // Add data to the graph
     VXGraphData* data = [VXGraphData new];
-    [data setXData:@[@1,@2,@3,@4,@5,@6]];
-    [data setYData:@[@1,@4,@9,@16,@25,@36]];
+    [data setXData:@[@-3,@-2, @-1,@0,@1,@2,@3,@4,@5,@6]];
+    [data setYData:@[@-9,@-4,@-1,@0,@1,@4,@9,@16,@25,@36]];
     [_mainGraph setGraphData:data];
 }
 
