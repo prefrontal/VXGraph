@@ -31,40 +31,6 @@
     
     // Setup gradient to draw the background of the view
     [self setupBackgroundGradient];
-
-//    // Everything is normalized to the maximum x-value
-//    double xmax = self.bounds.size.width - _XAXIS_OFFSET;
-//    
-//    CGMutablePathRef path = CGPathCreateMutable();
-//    // Segment 1
-//    CGPathMoveToPoint (path, NULL, _XAXIS_OFFSET, _YAXIS_OFFSET);
-//    CGPathAddLineToPoint (path, NULL, (858.0/880.0)*xmax, (160.0/880.0)*xmax);
-//    CGPathAddLineToPoint (path, NULL, xmax, _YAXIS_OFFSET);
-//    // Segment 2
-//    CGPathMoveToPoint (path, NULL, _XAXIS_OFFSET, _YAXIS_OFFSET);
-//    CGPathAddLineToPoint (path, NULL, (100.0/880.0)*xmax, (245.0/880.0)*xmax);
-//    CGPathAddLineToPoint (path, NULL, xmax, _YAXIS_OFFSET);
-//    // Segment 3
-//    CGPathMoveToPoint (path, NULL, _XAXIS_OFFSET, _YAXIS_OFFSET);
-//    CGPathAddLineToPoint (path, NULL, (277.0/880.0)*xmax, (406.0/880.0)*xmax);
-//    CGPathAddLineToPoint (path, NULL, xmax, _YAXIS_OFFSET);
-//    // Segment 4
-//    CGPathMoveToPoint (path, NULL, _XAXIS_OFFSET, _YAXIS_OFFSET);
-//    CGPathAddLineToPoint (path, NULL, (580.0/880.0)*xmax, (419.0/880.0)*xmax);
-//    CGPathAddLineToPoint (path, NULL, xmax, _YAXIS_OFFSET);
-//    // Segment 5
-//    CGPathMoveToPoint (path, NULL, _XAXIS_OFFSET, _YAXIS_OFFSET);
-//    CGPathAddLineToPoint (path, NULL, (723.0/880.0)*xmax, (337.0/880.0)*xmax);
-//    CGPathAddLineToPoint (path, NULL, xmax, _YAXIS_OFFSET);
-//    
-//    _dataPlotLayer = [CAShapeLayer new];
-//    _dataPlotLayer.path = path;
-//    _dataPlotLayer.fillColor = [[NSColor clearColor] CGColor];
-//    _dataPlotLayer.strokeColor = [[NSColor redColor] CGColor];
-//    _dataPlotLayer.lineWidth = 3.0;
-//    _dataPlotLayer.strokeEnd = 0.0;
-//    
-//    [self.layer addSublayer:_dataPlotLayer];
 }
 
 
@@ -122,6 +88,26 @@
     [[NSColor grayColor] set];
     [yaxis stroke];
 
+    // Draw Y-Axis Ticks
+    double yTickInterval = 2.0;
+    double yTickLength = 10;
+
+    double yTickNextPoint = yTickInterval * ceil(yDataMinimum / yTickInterval);
+    NSBezierPath *yticks = [NSBezierPath bezierPath];
+
+    while (yTickNextPoint < yDataMaximum)
+    {
+        double x = (0.0-xDataMinimum) * xScaleFactor + _YAXIS_OFFSET;
+        double y = (yTickNextPoint-yDataMinimum) * yScaleFactor + _YAXIS_OFFSET;
+        [yticks moveToPoint:NSMakePoint(x, y)];
+        [yticks lineToPoint:NSMakePoint(x + yTickLength, y)];
+        yTickNextPoint += yTickInterval;
+    }
+
+    [yticks setLineWidth:1.0];
+    [[NSColor grayColor] set];
+    [yticks stroke];
+
     // Draw X-Axis
     NSBezierPath *xaxis = [NSBezierPath bezierPath];
     [xaxis moveToPoint:NSMakePoint(graphBorderLeft, (0.0-yDataMinimum) * yScaleFactor + _YAXIS_OFFSET)];
@@ -130,9 +116,25 @@
     [[NSColor grayColor] set];
     [xaxis stroke];
 
-    // Draw Y-Axis Ticks
-
     // Draw X-Axis Ticks
+    double xTickInterval = 1.0;
+    double xTickLength = 10;
+
+    double xTickNextPoint = xTickInterval * ceil(xDataMinimum / xTickInterval);
+    NSBezierPath *xTicks = [NSBezierPath bezierPath];
+
+    while (xTickNextPoint < xDataMaximum)
+    {
+        double x = (xTickNextPoint-xDataMinimum) * xScaleFactor + _XAXIS_OFFSET;
+        double y = (0.0-yDataMinimum) * yScaleFactor + _XAXIS_OFFSET;
+        [xTicks moveToPoint:NSMakePoint(x, y)];
+        [xTicks lineToPoint:NSMakePoint(x, y + xTickLength)];
+        xTickNextPoint += xTickInterval;
+    }
+
+    [xTicks setLineWidth:1.0];
+    [[NSColor grayColor] set];
+    [xTicks stroke];
 
     // Graph Border Definition
     NSBezierPath *graphBorder = [NSBezierPath bezierPath];
