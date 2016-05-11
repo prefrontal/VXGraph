@@ -25,10 +25,6 @@
 
 - (void)awakeFromNib
 {
-    // Initialize member variables
-    _XAXIS_OFFSET = 50;
-    _YAXIS_OFFSET = 50;
-    
     // Setup gradient to draw the background of the view
     [self setupBackgroundGradient];
 }
@@ -41,10 +37,10 @@
     [self.backgroundGradient drawInRect:self.bounds angle:90.0];
 
     // Plotting Setup
-    double graphBorderLeft = NSMinX([self bounds]) + _YAXIS_OFFSET;
-    double graphBorderRight = NSMaxX([self bounds]) - _XAXIS_OFFSET;
-    double graphBorderTop = NSMaxY([self bounds]) - _YAXIS_OFFSET;
-    double graphBorderBottom = NSMinY([self bounds]) + _YAXIS_OFFSET;
+    double graphBorderLeft = NSMinX([self bounds]);
+    double graphBorderRight = NSMaxX([self bounds]);
+    double graphBorderTop = NSMaxY([self bounds]);
+    double graphBorderBottom = NSMinY([self bounds]);
 
     double xDataMinimum = [_graphData getXMinimum];
     double xDataMaximum = [_graphData getXMaximum];
@@ -64,11 +60,11 @@
 
         if (i == 0)
         {
-            CGPathMoveToPoint (path, NULL, (x-xDataMinimum) * xScaleFactor + _XAXIS_OFFSET, (y-yDataMinimum) * yScaleFactor + _YAXIS_OFFSET);
+            CGPathMoveToPoint (path, NULL, (x-xDataMinimum) * xScaleFactor, (y-yDataMinimum) * yScaleFactor);
             continue;
         }
 
-        CGPathAddLineToPoint (path, NULL, (x-xDataMinimum) * xScaleFactor + _XAXIS_OFFSET, (y-yDataMinimum) * yScaleFactor + _YAXIS_OFFSET);
+        CGPathAddLineToPoint (path, NULL, (x-xDataMinimum) * xScaleFactor, (y-yDataMinimum) * yScaleFactor);
     }
 
     _dataPlotLayer = [CAShapeLayer new];
@@ -82,8 +78,8 @@
 
     // Draw Y-Axis
     NSBezierPath *yaxis = [NSBezierPath bezierPath];
-    [yaxis moveToPoint:NSMakePoint((0.0-xDataMinimum) * xScaleFactor + _YAXIS_OFFSET, graphBorderBottom)];
-    [yaxis lineToPoint:NSMakePoint((0.0-xDataMinimum) * xScaleFactor + _YAXIS_OFFSET, graphBorderTop)];
+    [yaxis moveToPoint:NSMakePoint((0.0-xDataMinimum) * xScaleFactor, graphBorderBottom)];
+    [yaxis lineToPoint:NSMakePoint((0.0-xDataMinimum) * xScaleFactor, graphBorderTop)];
     [yaxis setLineWidth:2.0];
     [[NSColor grayColor] set];
     [yaxis stroke];
@@ -97,8 +93,9 @@
 
     while (yTickNextPoint < yDataMaximum)
     {
-        double x = (0.0-xDataMinimum) * xScaleFactor + _YAXIS_OFFSET;
-        double y = (yTickNextPoint-yDataMinimum) * yScaleFactor + _YAXIS_OFFSET;
+        //double x = (0.0-xDataMinimum) * xScaleFactor;
+        double x = graphBorderLeft;
+        double y = (yTickNextPoint-yDataMinimum) * yScaleFactor;
         [yticks moveToPoint:NSMakePoint(x, y)];
         [yticks lineToPoint:NSMakePoint(x + yTickLength, y)];
         yTickNextPoint += yTickInterval;
@@ -110,9 +107,9 @@
 
     // Draw X-Axis
     NSBezierPath *xaxis = [NSBezierPath bezierPath];
-    [xaxis moveToPoint:NSMakePoint(graphBorderLeft, (0.0-yDataMinimum) * yScaleFactor + _YAXIS_OFFSET)];
-    [xaxis lineToPoint:NSMakePoint(graphBorderRight, (0.0-yDataMinimum) * yScaleFactor + _YAXIS_OFFSET)];
-    [yaxis setLineWidth:2.0];
+    [xaxis moveToPoint:NSMakePoint(graphBorderLeft, (0.0-yDataMinimum) * yScaleFactor)];
+    [xaxis lineToPoint:NSMakePoint(graphBorderRight, (0.0-yDataMinimum) * yScaleFactor)];
+    [xaxis setLineWidth:2.0];
     [[NSColor grayColor] set];
     [xaxis stroke];
 
@@ -125,8 +122,9 @@
 
     while (xTickNextPoint < xDataMaximum)
     {
-        double x = (xTickNextPoint-xDataMinimum) * xScaleFactor + _XAXIS_OFFSET;
-        double y = (0.0-yDataMinimum) * yScaleFactor + _XAXIS_OFFSET;
+        double x = (xTickNextPoint-xDataMinimum) * xScaleFactor;
+        //double y = (0.0-yDataMinimum) * yScaleFactor;
+        double y = graphBorderBottom;
         [xTicks moveToPoint:NSMakePoint(x, y)];
         [xTicks lineToPoint:NSMakePoint(x, y + xTickLength)];
         xTickNextPoint += xTickInterval;
@@ -135,17 +133,6 @@
     [xTicks setLineWidth:1.0];
     [[NSColor grayColor] set];
     [xTicks stroke];
-
-    // Graph Border Definition
-    NSBezierPath *graphBorder = [NSBezierPath bezierPath];
-    [graphBorder moveToPoint:NSMakePoint(graphBorderLeft, graphBorderBottom)];
-    [graphBorder lineToPoint:NSMakePoint(graphBorderLeft, graphBorderTop)];
-    [graphBorder lineToPoint:NSMakePoint(graphBorderRight, graphBorderTop)];
-    [graphBorder lineToPoint:NSMakePoint(graphBorderRight, graphBorderBottom)];
-    [graphBorder lineToPoint:NSMakePoint(graphBorderLeft, graphBorderBottom)];
-    [graphBorder setLineWidth:1.0];
-    [[NSColor whiteColor] set];
-    [graphBorder stroke];
 
     // Outer Border Definition
     NSBezierPath *border = [NSBezierPath bezierPath];
