@@ -19,7 +19,18 @@
 
 - (void)awakeFromNib
 {
-
+    
+    // Axis properties
+    _axisColor = [NSColor grayColor];
+    
+    // Axis Tick Properties
+    _yTickInterval = 2.0;
+    _yTickLength = 10;
+    
+    _xTickInterval = 0.5;
+    _xTickLength = 10;
+    
+    _tickColor = [NSColor grayColor];
 }
 
 // -- Graph Drawing Methods ---------------------------------------------
@@ -73,15 +84,15 @@
 - (void)drawGraphAxes
 {
     // Plotting Setup
-    double graphBorderLeft = NSMinX([self bounds]);
-    double graphBorderRight = NSMaxX([self bounds]);
-    double graphBorderTop = NSMaxY([self bounds]);
+    double graphBorderLeft   = NSMinX([self bounds]);
+    double graphBorderRight  = NSMaxX([self bounds]);
+    double graphBorderTop    = NSMaxY([self bounds]);
     double graphBorderBottom = NSMinY([self bounds]);
 
-    double xDataMinimum = [_graphData getXMinimum];
-    double xDataMaximum = [_graphData getXMaximum];
-    double yDataMinimum = [_graphData getYMinimum];
-    double yDataMaximum = [_graphData getYMaximum];
+    double xDataMinimum = [_graphData xMinimum];
+    double xDataMaximum = [_graphData xMaximum];
+    double yDataMinimum = [_graphData yMinimum];
+    double yDataMaximum = [_graphData yMaximum];
 
     // Create data path
     double xScaleFactor = (graphBorderRight - graphBorderLeft) / (xDataMaximum - xDataMinimum);
@@ -92,7 +103,7 @@
     [yaxis moveToPoint:NSMakePoint((0.0-xDataMinimum) * xScaleFactor, graphBorderBottom)];
     [yaxis lineToPoint:NSMakePoint((0.0-xDataMinimum) * xScaleFactor, graphBorderTop)];
     [yaxis setLineWidth:2.0];
-    [[NSColor grayColor] set];
+    [_axisColor set];
     [yaxis stroke];
 
     // Draw X-Axis
@@ -100,32 +111,29 @@
     [xaxis moveToPoint:NSMakePoint(graphBorderLeft, (0.0-yDataMinimum) * yScaleFactor)];
     [xaxis lineToPoint:NSMakePoint(graphBorderRight, (0.0-yDataMinimum) * yScaleFactor)];
     [xaxis setLineWidth:2.0];
-    [[NSColor grayColor] set];
+    [_axisColor set];
     [xaxis stroke];
 }
 
 - (void)drawGraphAxisTicks
 {
     // Plotting Setup
-    double graphBorderLeft = NSMinX([self bounds]);
-    double graphBorderRight = NSMaxX([self bounds]);
-    double graphBorderTop = NSMaxY([self bounds]);
+    double graphBorderLeft   = NSMinX([self bounds]);
+    double graphBorderRight  = NSMaxX([self bounds]);
+    double graphBorderTop    = NSMaxY([self bounds]);
     double graphBorderBottom = NSMinY([self bounds]);
-
-    double xDataMinimum = [_graphData getXMinimum];
-    double xDataMaximum = [_graphData getXMaximum];
-    double yDataMinimum = [_graphData getYMinimum];
-    double yDataMaximum = [_graphData getYMaximum];
+    
+    double xDataMinimum = [_graphData xMinimum];
+    double xDataMaximum = [_graphData xMaximum];
+    double yDataMinimum = [_graphData yMinimum];
+    double yDataMaximum = [_graphData yMaximum];
 
     // Calculate data scale factors
     double xScaleFactor = (graphBorderRight - graphBorderLeft) / (xDataMaximum - xDataMinimum);
     double yScaleFactor = (graphBorderTop - graphBorderBottom) / (yDataMaximum - yDataMinimum);
 
     // Draw Y-Axis Ticks
-    double yTickInterval = 2.0;
-    double yTickLength = 10;
-
-    double yTickNextPoint = yTickInterval * ceil(yDataMinimum / yTickInterval);
+    double yTickNextPoint = _yTickInterval * ceil(yDataMinimum / _yTickInterval);
     NSBezierPath *yticks = [NSBezierPath bezierPath];
 
     while (yTickNextPoint < yDataMaximum)
@@ -134,19 +142,16 @@
         double x = graphBorderLeft;
         double y = (yTickNextPoint-yDataMinimum) * yScaleFactor;
         [yticks moveToPoint:NSMakePoint(x, y)];
-        [yticks lineToPoint:NSMakePoint(x + yTickLength, y)];
-        yTickNextPoint += yTickInterval;
+        [yticks lineToPoint:NSMakePoint(x + _yTickLength, y)];
+        yTickNextPoint += _yTickInterval;
     }
 
     [yticks setLineWidth:1.0];
-    [[NSColor grayColor] set];
+    [_tickColor set];
     [yticks stroke];
 
     // Draw X-Axis Ticks
-    double xTickInterval = 1.0;
-    double xTickLength = 10;
-
-    double xTickNextPoint = xTickInterval * ceil(xDataMinimum / xTickInterval);
+    double xTickNextPoint = _xTickInterval * ceil(xDataMinimum / _xTickInterval);
     NSBezierPath *xTicks = [NSBezierPath bezierPath];
 
     while (xTickNextPoint < xDataMaximum)
@@ -155,32 +160,36 @@
         //double y = (0.0-yDataMinimum) * yScaleFactor;
         double y = graphBorderBottom;
         [xTicks moveToPoint:NSMakePoint(x, y)];
-        [xTicks lineToPoint:NSMakePoint(x, y + xTickLength)];
-        xTickNextPoint += xTickInterval;
+        [xTicks lineToPoint:NSMakePoint(x, y + _xTickLength)];
+        xTickNextPoint += _xTickInterval;
     }
 
     [xTicks setLineWidth:1.0];
-    [[NSColor grayColor] set];
+    [_tickColor set];
     [xTicks stroke];
 }
 
 - (void)drawGraphData
 {
     // Plotting Setup
-    double graphBorderLeft = NSMinX([self bounds]);
-    double graphBorderRight = NSMaxX([self bounds]);
-    double graphBorderTop = NSMaxY([self bounds]);
+    double graphBorderLeft   = NSMinX([self bounds]);
+    double graphBorderRight  = NSMaxX([self bounds]);
+    double graphBorderTop    = NSMaxY([self bounds]);
     double graphBorderBottom = NSMinY([self bounds]);
-
-    double xDataMinimum = [_graphData getXMinimum];
-    double xDataMaximum = [_graphData getXMaximum];
-    double yDataMinimum = [_graphData getYMinimum];
-    double yDataMaximum = [_graphData getYMaximum];
+    
+    double xDataMinimum = [_graphData xMinimum];
+    double xDataMaximum = [_graphData xMaximum];
+    double yDataMinimum = [_graphData yMinimum];
+    double yDataMaximum = [_graphData yMaximum];
 
     // Calculate data scale factors
     double xScaleFactor = (graphBorderRight - graphBorderLeft) / (xDataMaximum - xDataMinimum);
     double yScaleFactor = (graphBorderTop - graphBorderBottom) / (yDataMaximum - yDataMinimum);
 
+    // Edge case: One or fewer data points
+    if (1 >= [_graphData.xData count])
+        return;
+    
     CGMutablePathRef path = CGPathCreateMutable();
 
     for (int i = 0; i < [_graphData.xData count]; i++)

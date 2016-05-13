@@ -15,22 +15,22 @@
 
 // -- Data Range Methods -------------------------------------------------------
 
--(double)getXMaximum
+-(double)xMaximum
 {
     return [[xData valueForKeyPath: @"@max.self"] doubleValue];
 }
 
--(double)getXMinimum
+-(double)xMinimum
 {
     return [[xData valueForKeyPath: @"@min.self"] doubleValue];
 }
 
--(double)getYMaximum
+-(double)yMaximum
 {
     return [[yData valueForKeyPath: @"@max.self"] doubleValue];
 }
 
--(double)getYMinimum
+-(double)yMinimum
 {
     return [[yData valueForKeyPath: @"@min.self"] doubleValue];
 

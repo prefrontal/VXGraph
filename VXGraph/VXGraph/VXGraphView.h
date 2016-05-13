@@ -15,6 +15,18 @@
 - (void)startAnimation1;
 - (void)startAnimation2;
 
-@property (nonatomic,retain) VXGraphData* graphData;
+@property (nonatomic,retain) VXGraphData *graphData;
+
+
+// Axes
+@property (nonatomic,retain) NSColor *axisColor;
+
+// Ticks
+@property (nonatomic,assign) double yTickInterval;
+@property (nonatomic,assign) double yTickLength;
+@property (nonatomic,assign) double xTickInterval;
+@property (nonatomic,assign) double xTickLength;
+
+@property (nonatomic,retain) NSColor *tickColor;
 
 @end
