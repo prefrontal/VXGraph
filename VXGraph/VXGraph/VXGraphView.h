@@ -25,10 +25,11 @@
 @property (nonatomic,retain) NSColor *axisColor;
 
 // Ticks
-@property (nonatomic,assign) double yTickInterval;
-@property (nonatomic,assign) double yTickLength;
 @property (nonatomic,assign) double xTickInterval;
+@property (nonatomic,assign) double yTickInterval;
+
 @property (nonatomic,assign) double xTickLength;
+@property (nonatomic,assign) double yTickLength;
 
 @property (nonatomic,retain) NSColor *tickColor;
 

@@ -32,6 +32,7 @@
 @implementation VXGraphView
 
 // -- Initialization --------------------------------------------------------
+#pragma mark Class Initialization Methods
 
 - (void)awakeFromNib
 {
@@ -80,7 +81,7 @@
     if (!_graphData)
         return;
     
-    // Plotting Setup
+    // Reload caches prior to drawing
     _graphBorderLeft   = NSMinX([self bounds]);
     _graphBorderRight  = NSMaxX([self bounds]);
     _graphBorderTop    = NSMaxY([self bounds]);
@@ -88,36 +89,26 @@
     
     _xDataMinimum = [_graphData xMinimum];
     _xDataMaximum = [_graphData xMaximum];
-    _yDataMinimum = [_graphData yMinimum];
-    _yDataMaximum = [_graphData yMaximum];
+    _yDataMinimum = [_graphData yMinimum] * 1.1;
+    _yDataMaximum = [_graphData yMaximum] * 1.1;
     
-    // Calculate data scale factors
     _xScaleFactor = (_graphBorderRight - _graphBorderLeft) / (_xDataMaximum - _xDataMinimum);
     _yScaleFactor = (_graphBorderTop - _graphBorderBottom) / (_yDataMaximum - _yDataMinimum);
 
+    // Draw graph contents
     [self drawBackgroundGradient];
-
-    [self drawGraphData];
-
     [self drawGraphAxes];
-
     [self drawGraphAxisTicks];
-
     [self drawGraphOuterBorder];
+    
+    if (1 < [_graphData.xData count])
+        [self drawGraphData];
 }
 
 - (void)drawBackgroundGradient {
     // Draw a basic gradient for the view background
-    CGFloat red1   =    0.0 / 255.0;
-    CGFloat green1 =   72.0 / 255.0;
-    CGFloat blue1  =  127.0 / 255.0;
-
-    CGFloat red2    =   0.0 / 255.0;
-    CGFloat green2  =  43.0 / 255.0;
-    CGFloat blue2   =  76.0 / 255.0;
-
-    NSColor* gradientTop    = [NSColor colorWithCalibratedRed:red1 green:green1 blue:blue1 alpha:1.0];
-    NSColor* gradientBottom = [NSColor colorWithCalibratedRed:red2 green:green2 blue:blue2 alpha:1.0];
+    NSColor* gradientTop    = [NSColor colorWithCalibratedRed:0.000 green:0.282 blue:0.498 alpha:1.0];
+    NSColor* gradientBottom = [NSColor colorWithCalibratedRed:0.000 green:0.169 blue:0.298 alpha:1.0];
     NSGradient* gradient = [[NSGradient alloc] initWithStartingColor:gradientBottom endingColor:gradientTop];
 
     [gradient drawInRect:self.bounds angle:90.0];
@@ -140,8 +131,8 @@
     // Draw Y-Axis, but only if it is within the view
     if (_yDataMaximum < (_yDataMaximum - _yDataMinimum)) {
         NSBezierPath *yaxis = [NSBezierPath bezierPath];
-        [yaxis moveToPoint:NSMakePoint((0.0-_xDataMinimum) * _xScaleFactor, _graphBorderBottom)];
-        [yaxis lineToPoint:NSMakePoint((0.0-_xDataMinimum) * _xScaleFactor, _graphBorderTop)];
+        [yaxis moveToPoint:NSMakePoint(-1.0 * _xDataMinimum * _xScaleFactor, _graphBorderBottom)];
+        [yaxis lineToPoint:NSMakePoint(-1.0 * _xDataMinimum * _xScaleFactor, _graphBorderTop)];
         [yaxis setLineWidth:_axisLineWidth];
         [_axisColor set];
         [yaxis stroke];
@@ -150,8 +141,8 @@
     // Draw X-Axis, but only if it is within the view
     if (_xDataMaximum < (_xDataMaximum - _xDataMinimum)) {
         NSBezierPath *xaxis = [NSBezierPath bezierPath];
-        [xaxis moveToPoint:NSMakePoint(_graphBorderLeft, (0.0-_yDataMinimum) * _yScaleFactor)];
-        [xaxis lineToPoint:NSMakePoint(_graphBorderRight, (0.0-_yDataMinimum) * _yScaleFactor)];
+        [xaxis moveToPoint:NSMakePoint(_graphBorderLeft, -1.0 * _yDataMinimum * _yScaleFactor)];
+        [xaxis lineToPoint:NSMakePoint(_graphBorderRight, -1.0 * _yDataMinimum * _yScaleFactor)];
         [xaxis setLineWidth:_axisLineWidth];
         [_axisColor set];
         [xaxis stroke];
@@ -195,9 +186,7 @@
 }
 
 - (void)drawGraphData {
-    // Edge case: One or fewer data points
-    if (1 >= [_graphData.xData count])
-        return;
+
     
     // Draw the graph data
     CGMutablePathRef path = CGPathCreateMutable();
@@ -212,7 +201,7 @@
             continue;
         }
 
-        CGPathAddLineToPoint (path, NULL, (x - _xDataMinimum) * _xScaleFactor, (y -_yDataMinimum) * _yScaleFactor);
+        CGPathAddLineToPoint (path, NULL, (x - _xDataMinimum) * _xScaleFactor, (y - _yDataMinimum) * _yScaleFactor);
     }
 
     _dataPlotLayer = [CAShapeLayer new];
@@ -225,46 +214,35 @@
     [self.layer addSublayer:_dataPlotLayer];
 }
 
-// -- Graph data methods ------------------------------------------------------
-
-
-
-// -- Random methods ----------------------------------------------------------
+// -- Animation methods ----------------------------------------------------------
+#pragma mark Graph Animation
 
 - (void)startAnimation1 {
     CABasicAnimation *circleAnimation = [CABasicAnimation animationWithKeyPath:@"strokeEnd"];
-    circleAnimation.duration = 4.0f;
-    circleAnimation.fromValue = [NSNumber numberWithFloat:0.0f];
-    circleAnimation.toValue = [NSNumber numberWithFloat:1.0f];
+    circleAnimation.duration = 4.0;
+    circleAnimation.fromValue = [NSNumber numberWithFloat:0.0];
+    circleAnimation.toValue = [NSNumber numberWithFloat:1.0];
     circleAnimation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
-    _dataPlotLayer.strokeEnd = 1.0f;
+    [_dataPlotLayer setStrokeEnd:1.0];
     [_dataPlotLayer addAnimation:circleAnimation forKey:@"strokeEnd"];
 }
 
 - (void)startAnimation2 {
     // create a CGPath that implements two arcs (a bounce)
     CGMutablePathRef thePath = CGPathCreateMutable();
-    CGPathMoveToPoint(thePath,NULL,0.0,0.0);
-    CGPathAddCurveToPoint(thePath,NULL,74.0,500.0,
-                          320.0,500.0,
-                          320.0,74.0);
-    CGPathAddCurveToPoint(thePath,NULL,320.0,500.0,
-                          566.0,500.0,
-                          566.0,74.0);
-    CGPathAddCurveToPoint(thePath,NULL,246.0,500.0,
-                          246.0,500.0,
-                          0.0,0.0);
+    CGPathMoveToPoint (thePath,NULL,0.0,0.0);
+    CGPathAddCurveToPoint (thePath,NULL,74.0,500.0,320.0,500.0,320.0,74.0);
+    CGPathAddCurveToPoint (thePath,NULL,320.0,500.0,566.0,500.0,566.0,74.0);
+    CGPathAddCurveToPoint (thePath,NULL,246.0,500.0,246.0,500.0,0.0,0.0);
     
+    // Create the animation object, specifying the position property as the key path
     CAKeyframeAnimation *theAnimation;
-    
-    // Create the animation object, specifying the position property as the key path.
     theAnimation=[CAKeyframeAnimation animationWithKeyPath:@"position"];
-    theAnimation.path=thePath;
-    theAnimation.duration=5.0;
+    [theAnimation setPath:thePath];
+    [theAnimation setDuration:5.0];
     
     // Add the animation to the layer.
     [_dataPlotLayer addAnimation:theAnimation forKey:@"position"];
-
 }
 
 @end

@@ -29,7 +29,7 @@
     
     for (double i = -4*M_PI; i <= 4*M_PI; i += M_PI/20.0) {
         [x addObject:[NSNumber numberWithDouble:i]];
-        [y addObject:[NSNumber numberWithDouble:10*sin(i)]];
+        [y addObject:[NSNumber numberWithDouble:10*cos(i)]];
     }
     
     [data setXData:x];
