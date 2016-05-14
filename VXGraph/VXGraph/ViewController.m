@@ -23,8 +23,18 @@
 
     // Add data to the graph
     VXGraphData* data = [VXGraphData new];
-    [data setXData:@[@-3,@-2, @-1,@0,@1,@2,@3,@4,@5,@6]];
-    [data setYData:@[@-9,@-4,@-1,@0,@1,@4,@9,@16,@25,@36]];
+    
+    NSMutableArray *x = [NSMutableArray new];
+    NSMutableArray *y = [NSMutableArray new];
+    
+    for (double i = -4*M_PI; i <= 4*M_PI; i += M_PI/20.0) {
+        [x addObject:[NSNumber numberWithDouble:i]];
+        [y addObject:[NSNumber numberWithDouble:10*sin(i)]];
+    }
+    
+    [data setXData:x];
+    [data setYData:y];
+    
     [_mainGraph setGraphData:data];
 }
 

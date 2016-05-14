@@ -17,8 +17,11 @@
 
 @property (nonatomic,retain) VXGraphData *graphData;
 
+// Border
+@property (nonatomic,assign) double borderLineWidth;
 
 // Axes
+@property (nonatomic,assign) double axisLineWidth;
 @property (nonatomic,retain) NSColor *axisColor;
 
 // Ticks
@@ -28,5 +31,9 @@
 @property (nonatomic,assign) double xTickLength;
 
 @property (nonatomic,retain) NSColor *tickColor;
+
+// Data
+@property (nonatomic,assign) double dataLineWidth;
+@property (nonatomic,retain) NSColor *dataColor;
 
 @end
