@@ -13,10 +13,16 @@
 @property (nonatomic,retain) NSArray* xData;
 @property (nonatomic,retain) NSArray* yData;
 
+
+// Metadata Methods
+-(int)count;
+
 -(double)xMaximum;
 -(double)xMinimum;
+-(double)xAverage;
 
 -(double)yMaximum;
 -(double)yMinimum;
+-(double)yAverage;
 
 @end

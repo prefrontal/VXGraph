@@ -77,7 +77,7 @@
 - (void)drawRect:(NSRect)dirtyRect {
     [super drawRect:dirtyRect];
     
-    // Do not proceed if there is no graph data object present
+    // Do not proceed if there is no graph data present
     if (!_graphData)
         return;
     
@@ -186,8 +186,6 @@
 }
 
 - (void)drawGraphData {
-
-    
     // Draw the graph data
     CGMutablePathRef path = CGPathCreateMutable();
 

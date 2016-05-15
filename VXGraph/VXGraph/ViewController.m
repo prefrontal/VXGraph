@@ -27,7 +27,7 @@
     NSMutableArray *x = [NSMutableArray new];
     NSMutableArray *y = [NSMutableArray new];
     
-    for (double i = -4*M_PI; i <= 4*M_PI; i += M_PI/20.0) {
+    for (double i = -8*M_PI; i <= 8*M_PI; i += M_PI/800.0) {
         [x addObject:[NSNumber numberWithDouble:i]];
         [y addObject:[NSNumber numberWithDouble:10*cos(i)]];
     }

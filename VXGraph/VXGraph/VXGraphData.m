@@ -13,27 +13,35 @@
 @synthesize xData;
 @synthesize yData;
 
-// -- Data Range Methods -------------------------------------------------------
+// -- Metadata Methods -------------------------------------------------------
 
--(double)xMaximum
-{
+-(int)count {
+    // Determine the count from the x-data
+    return (int)[xData count];
+}
+
+-(double)xMaximum {
     return [[xData valueForKeyPath: @"@max.self"] doubleValue];
 }
 
--(double)xMinimum
-{
+-(double)xMinimum {
     return [[xData valueForKeyPath: @"@min.self"] doubleValue];
 }
 
--(double)yMaximum
-{
+-(double)xAverage {
+    return [[xData valueForKeyPath: @"@avg.self"] doubleValue];
+}
+
+-(double)yMaximum {
     return [[yData valueForKeyPath: @"@max.self"] doubleValue];
 }
 
--(double)yMinimum
-{
+-(double)yMinimum {
     return [[yData valueForKeyPath: @"@min.self"] doubleValue];
+}
 
+-(double)yAverage {
+    return [[yData valueForKeyPath: @"@avg.self"] doubleValue];
 }
 
 @end
