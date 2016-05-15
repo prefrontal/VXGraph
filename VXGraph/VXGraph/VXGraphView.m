@@ -13,6 +13,12 @@
 @property CAShapeLayer *dataPlotLayer;
 
 // Properties defining the view boundary cache
+@property (nonatomic,assign) double viewBorderTop;
+@property (nonatomic,assign) double viewBorderBottom;
+@property (nonatomic,assign) double viewBorderLeft;
+@property (nonatomic,assign) double viewBorderRight;
+
+// Properties defining the graph area boundary cache
 @property (nonatomic,assign) double graphBorderTop;
 @property (nonatomic,assign) double graphBorderBottom;
 @property (nonatomic,assign) double graphBorderLeft;
@@ -24,9 +30,10 @@
 @property (nonatomic,assign) double yDataMinimum;
 @property (nonatomic,assign) double yDataMaximum;
 
-// Proeprties defining the data scale factor cache
+// Properties defining the data scale factor cache
 @property (nonatomic,assign) double xScaleFactor;
 @property (nonatomic,assign) double yScaleFactor;
+
 @end
 
 @implementation VXGraphView
@@ -44,8 +51,8 @@
     _axisColor = [NSColor grayColor];
     
     // Axis Tick Properties
-    _xTickInterval = 0.5;
-    _yTickInterval = 0.5;
+    _xTickInterval = 1.0;
+    _yTickInterval = 1.0;
 
     _xTickLength = 10;
     _yTickLength = 10;
@@ -57,10 +64,15 @@
     _dataColor = [NSColor redColor];
     
     // View and data cache initialization
-    _graphBorderLeft   = NSMinX([self bounds]);
-    _graphBorderRight  = NSMaxX([self bounds]);
-    _graphBorderTop    = NSMaxY([self bounds]);
-    _graphBorderBottom = NSMinY([self bounds]);
+    _viewBorderLeft   = NSMinX([self bounds]);
+    _viewBorderRight  = NSMaxX([self bounds]);
+    _viewBorderTop    = NSMaxY([self bounds]);
+    _viewBorderBottom = NSMinY([self bounds]);
+
+    _graphBorderTop    = _viewBorderTop - 10;
+    _graphBorderBottom = _viewBorderBottom + 10;
+    _graphBorderLeft   = _viewBorderLeft + 10;
+    _graphBorderRight  = _viewBorderRight - 10;
     
     _xDataMinimum = -10;
     _xDataMaximum = 10;
@@ -82,23 +94,30 @@
         return;
     
     // Reload caches prior to drawing
-    _graphBorderLeft   = NSMinX([self bounds]);
-    _graphBorderRight  = NSMaxX([self bounds]);
-    _graphBorderTop    = NSMaxY([self bounds]);
-    _graphBorderBottom = NSMinY([self bounds]);
-    
+    _viewBorderLeft   = NSMinX([self bounds]);
+    _viewBorderRight  = NSMaxX([self bounds]);
+    _viewBorderTop    = NSMaxY([self bounds]);
+    _viewBorderBottom = NSMinY([self bounds]);
+
+    _graphBorderTop    = _viewBorderTop - 10;
+    _graphBorderBottom = _viewBorderBottom + 10;
+    _graphBorderLeft   = _viewBorderLeft + 10;
+    _graphBorderRight  = _viewBorderRight - 10;
+
     _xDataMinimum = [_graphData xMinimum];
     _xDataMaximum = [_graphData xMaximum];
     _yDataMinimum = [_graphData yMinimum] * 1.1;
     _yDataMaximum = [_graphData yMaximum] * 1.1;
     
-    _xScaleFactor = (_graphBorderRight - _graphBorderLeft) / (_xDataMaximum - _xDataMinimum);
-    _yScaleFactor = (_graphBorderTop - _graphBorderBottom) / (_yDataMaximum - _yDataMinimum);
+    _xScaleFactor = (_viewBorderRight - _viewBorderLeft) / (_xDataMaximum - _xDataMinimum);
+    _yScaleFactor = (_viewBorderTop - _viewBorderBottom) / (_yDataMaximum - _yDataMinimum);
 
     // Draw graph contents
     [self drawBackgroundGradient];
-    [self drawGraphAxes];
-    [self drawGraphAxisTicks];
+    [self drawGraphYAxis];
+    [self drawGraphYAxisTicks];
+    [self drawGraphXAxis];
+    [self drawGraphXAxisTicks];
     [self drawGraphOuterBorder];
     
     if (1 < [_graphData.xData count])
@@ -127,54 +146,70 @@
     [border stroke];
 }
 
-- (void)drawGraphAxes {
+- (void)drawGraphYAxis {
     // Draw Y-Axis, but only if it is within the view
     if (_yDataMaximum < (_yDataMaximum - _yDataMinimum)) {
         NSBezierPath *yaxis = [NSBezierPath bezierPath];
-        [yaxis moveToPoint:NSMakePoint(-1.0 * _xDataMinimum * _xScaleFactor, _graphBorderBottom)];
-        [yaxis lineToPoint:NSMakePoint(-1.0 * _xDataMinimum * _xScaleFactor, _graphBorderTop)];
+        [yaxis moveToPoint:NSMakePoint(-1.0 * _xDataMinimum * _xScaleFactor, _viewBorderBottom)];
+        [yaxis lineToPoint:NSMakePoint(-1.0 * _xDataMinimum * _xScaleFactor, _viewBorderTop)];
         [yaxis setLineWidth:_axisLineWidth];
         [_axisColor set];
         [yaxis stroke];
     }
-
-    // Draw X-Axis, but only if it is within the view
-    if (_xDataMaximum < (_xDataMaximum - _xDataMinimum)) {
-        NSBezierPath *xaxis = [NSBezierPath bezierPath];
-        [xaxis moveToPoint:NSMakePoint(_graphBorderLeft, -1.0 * _yDataMinimum * _yScaleFactor)];
-        [xaxis lineToPoint:NSMakePoint(_graphBorderRight, -1.0 * _yDataMinimum * _yScaleFactor)];
-        [xaxis setLineWidth:_axisLineWidth];
-        [_axisColor set];
-        [xaxis stroke];
-    }
 }
 
-- (void)drawGraphAxisTicks {
+- (void)drawGraphYAxisTicks {
+
+    // Label Attributes
+    NSDictionary *attributes = [NSDictionary dictionaryWithObjectsAndKeys:[NSFont fontWithName:@"Helvetica" size:16], NSFontAttributeName,[NSColor grayColor], NSForegroundColorAttributeName, nil];
+
     // Draw Y-Axis Ticks
     double yTickNextPoint = _yTickInterval * ceil(_yDataMinimum / _yTickInterval);
     NSBezierPath *yticks = [NSBezierPath bezierPath];
 
     while (yTickNextPoint < _yDataMaximum) {
-        //double x = (0.0-xDataMinimum) * xScaleFactor;
-        double x = _graphBorderLeft;
+        double x = _viewBorderLeft;
         double y = (yTickNextPoint-_yDataMinimum) * _yScaleFactor;
+
+        // Draw axis tick
         [yticks moveToPoint:NSMakePoint(x, y)];
         [yticks lineToPoint:NSMakePoint(x + _yTickLength, y)];
+
+        // Draw tick label
+        NSString* text = [NSString stringWithFormat:@"%1.0f", yTickNextPoint];
+        NSAttributedString *currentText = [[NSAttributedString alloc] initWithString:text attributes:attributes];
+        double yOffset = [currentText size].height / 2;
+        NSPoint point = NSMakePoint(x + _yTickLength, y - yOffset);
+        [currentText drawAtPoint:point];
+
         yTickNextPoint += _yTickInterval;
     }
 
     [yticks setLineWidth:1.0];
     [_tickColor set];
     [yticks stroke];
+}
 
+- (void)drawGraphXAxis {
+    // Draw X-Axis, but only if it is within the view
+    if (_xDataMaximum < (_xDataMaximum - _xDataMinimum)) {
+        NSBezierPath *xaxis = [NSBezierPath bezierPath];
+        [xaxis moveToPoint:NSMakePoint(_viewBorderLeft, -1.0 * _yDataMinimum * _yScaleFactor)];
+        [xaxis lineToPoint:NSMakePoint(_viewBorderRight, -1.0 * _yDataMinimum * _yScaleFactor)];
+        [xaxis setLineWidth:_axisLineWidth];
+        [_axisColor set];
+        [xaxis stroke];
+    }
+}
+
+- (void)drawGraphXAxisTicks {
     // Draw X-Axis Ticks
     double xTickNextPoint = _xTickInterval * ceil(_xDataMinimum / _xTickInterval);
     NSBezierPath *xTicks = [NSBezierPath bezierPath];
 
     while (xTickNextPoint < _xDataMaximum) {
         double x = (xTickNextPoint-_xDataMinimum) * _xScaleFactor;
-        //double y = (0.0-yDataMinimum) * yScaleFactor;
-        double y = _graphBorderBottom;
+        double y = _viewBorderBottom;
         [xTicks moveToPoint:NSMakePoint(x, y)];
         [xTicks lineToPoint:NSMakePoint(x, y + _xTickLength)];
         xTickNextPoint += _xTickInterval;

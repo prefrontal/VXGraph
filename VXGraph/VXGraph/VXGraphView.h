@@ -12,9 +12,6 @@
 
 @interface VXGraphView : NSView
 
-- (void)startAnimation1;
-- (void)startAnimation2;
-
 @property (nonatomic,retain) VXGraphData *graphData;
 
 // Border
@@ -36,5 +33,8 @@
 // Data
 @property (nonatomic,assign) double dataLineWidth;
 @property (nonatomic,retain) NSColor *dataColor;
+
+- (void)startAnimation1;
+- (void)startAnimation2;
 
 @end
