@@ -12,6 +12,9 @@
 @interface VXGraphView ()
 @property CAShapeLayer *dataPlotLayer;
 
+@property (nonatomic,assign) double xLabelHeight;
+@property (nonatomic,assign) double yLabelWidth;
+
 // Properties defining the view boundary cache
 @property (nonatomic,assign) double viewBorderTop;
 @property (nonatomic,assign) double viewBorderBottom;
@@ -43,15 +46,18 @@
 
 - (void)awakeFromNib
 {
+    _yLabelWidth = 0.0;
+    _xLabelHeight = 100.0;
+
     // Border Properties
-    _borderLineWidth = 4.0;
+    _borderLineWidth = 2.0;
     
     // Axis Properties
     _axisLineWidth = 2.0;
     _axisColor = [NSColor grayColor];
     
     // Axis Tick Properties
-    _xTickInterval = 1.0;
+    _xTickInterval = 2.0;
     _yTickInterval = 1.0;
 
     _xTickLength = 10;
@@ -99,29 +105,91 @@
     _viewBorderTop    = NSMaxY([self bounds]);
     _viewBorderBottom = NSMinY([self bounds]);
 
-    _graphBorderTop    = _viewBorderTop - 10;
-    _graphBorderBottom = _viewBorderBottom + 10;
-    _graphBorderLeft   = _viewBorderLeft + 10;
-    _graphBorderRight  = _viewBorderRight - 10;
-
     _xDataMinimum = [_graphData xMinimum];
     _xDataMaximum = [_graphData xMaximum];
     _yDataMinimum = [_graphData yMinimum] * 1.1;
     _yDataMaximum = [_graphData yMaximum] * 1.1;
-    
-    _xScaleFactor = (_viewBorderRight - _viewBorderLeft) / (_xDataMaximum - _xDataMinimum);
-    _yScaleFactor = (_viewBorderTop - _viewBorderBottom) / (_yDataMaximum - _yDataMinimum);
+
+    [self determineYLabelWidth];
+    //[self drawXAxisLabels];
+
+    _graphBorderTop    = _viewBorderTop;
+    _graphBorderBottom = _viewBorderBottom + _xLabelHeight;
+    _graphBorderLeft   = _viewBorderLeft + _yLabelWidth;
+    _graphBorderRight  = _viewBorderRight;
+
+    _xScaleFactor = (_graphBorderRight - _graphBorderLeft) / (_xDataMaximum - _xDataMinimum);
+    _yScaleFactor = (_graphBorderTop - _graphBorderBottom) / (_yDataMaximum - _yDataMinimum);
 
     // Draw graph contents
     [self drawBackgroundGradient];
+    [self drawYAxisLabels];
+    [self drawXAxisLabels];
+
+
+
     [self drawGraphYAxis];
-    [self drawGraphYAxisTicks];
     [self drawGraphXAxis];
+    [self drawGraphYAxisTicks];
     [self drawGraphXAxisTicks];
+    [self drawGraphInnerBorder];
     [self drawGraphOuterBorder];
-    
+
     if (1 < [_graphData.xData count])
         [self drawGraphData];
+}
+
+- (void) determineYLabelWidth {
+    NSDictionary *attributes = [NSDictionary dictionaryWithObjectsAndKeys:
+                                [NSFont fontWithName:@"Helvetica" size:14], NSFontAttributeName,
+                                [NSColor grayColor], NSForegroundColorAttributeName,
+                                nil];
+    double yLabelPadding = 8.0;
+
+    double yTickNextPoint = _yTickInterval * ceil(_yDataMinimum / _yTickInterval);
+
+    while (yTickNextPoint < _yDataMaximum) {
+        NSString* text = [NSString stringWithFormat:@"%1.1f", yTickNextPoint];
+        NSAttributedString *currentText = [[NSAttributedString alloc] initWithString:text attributes:attributes];
+        if (_yLabelWidth < [currentText size].width)
+            _yLabelWidth = [currentText size].width + 2 * yLabelPadding;
+        yTickNextPoint += _yTickInterval;
+    }
+}
+
+- (void)determineXLabelHeight {
+
+}
+
+- (void)drawYAxisLabels {
+    NSDictionary *attributes = [NSDictionary dictionaryWithObjectsAndKeys:
+                                [NSFont fontWithName:@"Helvetica" size:14], NSFontAttributeName,
+                                [NSColor grayColor], NSForegroundColorAttributeName,
+                                nil];
+    double yLabelPadding = 8.0;
+
+    double yTickNextPoint = _yTickInterval * ceil(_yDataMinimum / _yTickInterval);
+
+    while (yTickNextPoint < _yDataMaximum) {
+        double x = _viewBorderLeft + yLabelPadding;
+        double y = (yTickNextPoint-_yDataMinimum) * _yScaleFactor + _graphBorderBottom;
+
+        // Draw tick label
+        NSString* text = [NSString stringWithFormat:@"%1.1f", yTickNextPoint];
+        NSAttributedString *currentText = [[NSAttributedString alloc] initWithString:text attributes:attributes];
+        double yOffset = [currentText size].height / 2;
+        NSPoint point = NSMakePoint(x, y - yOffset);
+        [currentText drawAtPoint:point];
+
+        if (_yLabelWidth < [currentText size].width)
+            _yLabelWidth = [currentText size].width + 2 * yLabelPadding;
+
+        yTickNextPoint += _yTickInterval;
+    }
+}
+
+- (void)drawXAxisLabels {
+    //_xLabelHeight = 40.0;
 }
 
 - (void)drawBackgroundGradient {
@@ -133,8 +201,19 @@
     [gradient drawInRect:self.bounds angle:90.0];
 }
 
+- (void)drawGraphInnerBorder {
+    NSBezierPath *border = [NSBezierPath bezierPath];
+    [border moveToPoint:NSMakePoint(NSMinX([self bounds])+_yLabelWidth, NSMinY([self bounds])+_xLabelHeight)];
+    [border lineToPoint:NSMakePoint(NSMinX([self bounds])+_yLabelWidth, NSMaxY([self bounds]))];
+    [border lineToPoint:NSMakePoint(NSMaxX([self bounds]), NSMaxY([self bounds]))];
+    [border lineToPoint:NSMakePoint(NSMaxX([self bounds]), NSMinY([self bounds])+_xLabelHeight)];
+    [border lineToPoint:NSMakePoint(NSMinX([self bounds])+_yLabelWidth, NSMinY([self bounds])+_xLabelHeight)];
+    [border setLineWidth:_borderLineWidth];
+    [[NSColor grayColor] set];
+    [border stroke];
+}
+
 - (void)drawGraphOuterBorder {
-    // Outer Border Definition
     NSBezierPath *border = [NSBezierPath bezierPath];
     [border moveToPoint:NSMakePoint(NSMinX([self bounds]), NSMinY([self bounds]))];
     [border lineToPoint:NSMakePoint(NSMinX([self bounds]), NSMaxY([self bounds]))];
@@ -150,37 +229,36 @@
     // Draw Y-Axis, but only if it is within the view
     if (_yDataMaximum < (_yDataMaximum - _yDataMinimum)) {
         NSBezierPath *yaxis = [NSBezierPath bezierPath];
-        [yaxis moveToPoint:NSMakePoint(-1.0 * _xDataMinimum * _xScaleFactor, _viewBorderBottom)];
-        [yaxis lineToPoint:NSMakePoint(-1.0 * _xDataMinimum * _xScaleFactor, _viewBorderTop)];
+        [yaxis moveToPoint:NSMakePoint(-1.0 * _xDataMinimum * _xScaleFactor + _graphBorderLeft, _viewBorderBottom+_xLabelHeight)];
+        [yaxis lineToPoint:NSMakePoint(-1.0 * _xDataMinimum * _xScaleFactor + _graphBorderLeft, _viewBorderTop)];
         [yaxis setLineWidth:_axisLineWidth];
         [_axisColor set];
         [yaxis stroke];
     }
 }
 
+- (void)drawGraphXAxis {
+    // Draw X-Axis, but only if it is within the view
+    if (_xDataMaximum < (_xDataMaximum - _xDataMinimum)) {
+        NSBezierPath *xaxis = [NSBezierPath bezierPath];
+        [xaxis moveToPoint:NSMakePoint(_viewBorderLeft+_yLabelWidth, -1.0 * _yDataMinimum * _yScaleFactor + _graphBorderBottom)];
+        [xaxis lineToPoint:NSMakePoint(_viewBorderRight, -1.0 * _yDataMinimum * _yScaleFactor + _graphBorderBottom)];
+        [xaxis setLineWidth:_axisLineWidth];
+        [_axisColor set];
+        [xaxis stroke];
+    }
+}
+
 - (void)drawGraphYAxisTicks {
-
-    // Label Attributes
-    NSDictionary *attributes = [NSDictionary dictionaryWithObjectsAndKeys:[NSFont fontWithName:@"Helvetica" size:16], NSFontAttributeName,[NSColor grayColor], NSForegroundColorAttributeName, nil];
-
-    // Draw Y-Axis Ticks
     double yTickNextPoint = _yTickInterval * ceil(_yDataMinimum / _yTickInterval);
     NSBezierPath *yticks = [NSBezierPath bezierPath];
 
     while (yTickNextPoint < _yDataMaximum) {
-        double x = _viewBorderLeft;
-        double y = (yTickNextPoint-_yDataMinimum) * _yScaleFactor;
+        double x = _graphBorderLeft;
+        double y = (yTickNextPoint-_yDataMinimum) * _yScaleFactor + _xLabelHeight;
 
-        // Draw axis tick
         [yticks moveToPoint:NSMakePoint(x, y)];
         [yticks lineToPoint:NSMakePoint(x + _yTickLength, y)];
-
-        // Draw tick label
-        NSString* text = [NSString stringWithFormat:@"%1.0f", yTickNextPoint];
-        NSAttributedString *currentText = [[NSAttributedString alloc] initWithString:text attributes:attributes];
-        double yOffset = [currentText size].height / 2;
-        NSPoint point = NSMakePoint(x + _yTickLength, y - yOffset);
-        [currentText drawAtPoint:point];
 
         yTickNextPoint += _yTickInterval;
     }
@@ -190,26 +268,13 @@
     [yticks stroke];
 }
 
-- (void)drawGraphXAxis {
-    // Draw X-Axis, but only if it is within the view
-    if (_xDataMaximum < (_xDataMaximum - _xDataMinimum)) {
-        NSBezierPath *xaxis = [NSBezierPath bezierPath];
-        [xaxis moveToPoint:NSMakePoint(_viewBorderLeft, -1.0 * _yDataMinimum * _yScaleFactor)];
-        [xaxis lineToPoint:NSMakePoint(_viewBorderRight, -1.0 * _yDataMinimum * _yScaleFactor)];
-        [xaxis setLineWidth:_axisLineWidth];
-        [_axisColor set];
-        [xaxis stroke];
-    }
-}
-
 - (void)drawGraphXAxisTicks {
-    // Draw X-Axis Ticks
     double xTickNextPoint = _xTickInterval * ceil(_xDataMinimum / _xTickInterval);
     NSBezierPath *xTicks = [NSBezierPath bezierPath];
 
     while (xTickNextPoint < _xDataMaximum) {
-        double x = (xTickNextPoint-_xDataMinimum) * _xScaleFactor;
-        double y = _viewBorderBottom;
+        double x = (xTickNextPoint-_xDataMinimum) * _xScaleFactor + _yLabelWidth;
+        double y = _graphBorderBottom;
         [xTicks moveToPoint:NSMakePoint(x, y)];
         [xTicks lineToPoint:NSMakePoint(x, y + _xTickLength)];
         xTickNextPoint += _xTickInterval;
@@ -221,7 +286,6 @@
 }
 
 - (void)drawGraphData {
-    // Draw the graph data
     CGMutablePathRef path = CGPathCreateMutable();
 
     for (int i = 0; i < [_graphData.xData count]; i++) {
@@ -230,11 +294,11 @@
         
         if (i == 0) {
             // Just move to the the point if this is the first element
-            CGPathMoveToPoint (path, NULL, (x - _xDataMinimum) * _xScaleFactor, (y - _yDataMinimum) * _yScaleFactor);
+            CGPathMoveToPoint (path, NULL, (x - _xDataMinimum) * _xScaleFactor + _yLabelWidth, (y - _yDataMinimum) * _yScaleFactor + _xLabelHeight);
             continue;
         }
 
-        CGPathAddLineToPoint (path, NULL, (x - _xDataMinimum) * _xScaleFactor, (y - _yDataMinimum) * _yScaleFactor);
+        CGPathAddLineToPoint (path, NULL, (x - _xDataMinimum) * _xScaleFactor + _yLabelWidth, (y - _yDataMinimum) * _yScaleFactor + _xLabelHeight);
     }
 
     _dataPlotLayer = [CAShapeLayer new];
