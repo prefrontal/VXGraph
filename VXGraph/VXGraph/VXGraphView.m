@@ -47,7 +47,7 @@
 - (void)awakeFromNib
 {
     _yLabelWidth = 0.0;
-    _xLabelHeight = 100.0;
+    _xLabelHeight = 0.0;
 
     // Border Properties
     _borderLineWidth = 2.0;
@@ -57,8 +57,8 @@
     _axisColor = [NSColor grayColor];
     
     // Axis Tick Properties
-    _xTickInterval = 2.0;
-    _yTickInterval = 1.0;
+    _xTickInterval = M_PI * 2;
+    _yTickInterval = 0.2;
 
     _xTickLength = 10;
     _yTickLength = 10;
@@ -111,7 +111,7 @@
     _yDataMaximum = [_graphData yMaximum] * 1.1;
 
     [self determineYLabelWidth];
-    //[self drawXAxisLabels];
+    [self determineXLabelHeight];
 
     _graphBorderTop    = _viewBorderTop;
     _graphBorderBottom = _viewBorderBottom + _xLabelHeight;
@@ -158,7 +158,22 @@
 }
 
 - (void)determineXLabelHeight {
+    NSDictionary *attributes = [NSDictionary dictionaryWithObjectsAndKeys:
+                                [NSFont fontWithName:@"Helvetica" size:14], NSFontAttributeName,
+                                [NSColor grayColor], NSForegroundColorAttributeName,
+                                nil];
+    double xLabelPadding = 8.0;
 
+    double xTickNextPoint = _xTickInterval * ceil(_xDataMinimum / _xTickInterval);
+
+    while (xTickNextPoint < _xDataMaximum) {
+        NSString* text = [NSString stringWithFormat:@"%1.2f", xTickNextPoint];
+        NSAttributedString *currentText = [[NSAttributedString alloc] initWithString:text attributes:attributes];
+        if (_xLabelHeight < [currentText size].height)
+            _xLabelHeight = [currentText size].height + 2 * xLabelPadding;
+
+        xTickNextPoint += _xTickInterval;
+    }
 }
 
 - (void)drawYAxisLabels {
@@ -189,7 +204,30 @@
 }
 
 - (void)drawXAxisLabels {
-    //_xLabelHeight = 40.0;
+    NSDictionary *attributes = [NSDictionary dictionaryWithObjectsAndKeys:
+                                [NSFont fontWithName:@"Helvetica" size:14], NSFontAttributeName,
+                                [NSColor grayColor], NSForegroundColorAttributeName,
+                                nil];
+    double xLabelPadding = 8.0;
+
+    double xTickNextPoint = _xTickInterval * ceil(_xDataMinimum / _xTickInterval);
+
+    while (xTickNextPoint < _xDataMaximum) {
+        double x = (xTickNextPoint-_xDataMinimum) * _xScaleFactor + +_graphBorderLeft;
+        double y = _viewBorderBottom + xLabelPadding;
+
+        // Draw tick label
+        NSString* text = [NSString stringWithFormat:@"%1.2f", xTickNextPoint];
+        NSAttributedString *currentText = [[NSAttributedString alloc] initWithString:text attributes:attributes];
+        double xOffset = [currentText size].width / 2;
+        NSPoint point = NSMakePoint(x- xOffset, y);
+        [currentText drawAtPoint:point];
+
+        if (_xLabelHeight < [currentText size].height)
+            _xLabelHeight = [currentText size].height + 2 * xLabelPadding;
+
+        xTickNextPoint += _xTickInterval;
+    }
 }
 
 - (void)drawBackgroundGradient {
