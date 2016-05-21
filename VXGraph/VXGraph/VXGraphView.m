@@ -180,7 +180,7 @@
 
     while (yTickNextPoint < _yDataMaximum) {
         double x = _viewBorderLeft + _yLabelPadding;
-        double y = (yTickNextPoint-_yDataMinimum) * _yScaleFactor + _graphBorderBottom;
+        double y = (yTickNextPoint - _yDataMinimum) * _yScaleFactor + _graphBorderBottom;
 
         NSString* text = [NSString stringWithFormat:@"%1.1f", yTickNextPoint];
         NSAttributedString *currentText = [[NSAttributedString alloc] initWithString:text attributes:_labelFontAttributes];
@@ -199,13 +199,13 @@
     double xTickNextPoint = _xTickInterval * ceil(_xDataMinimum / _xTickInterval);
 
     while (xTickNextPoint < _xDataMaximum) {
-        double x = (xTickNextPoint-_xDataMinimum) * _xScaleFactor + +_graphBorderLeft;
+        double x = (xTickNextPoint - _xDataMinimum) * _xScaleFactor + +_graphBorderLeft;
         double y = _viewBorderBottom + _xLabelPadding;
 
         NSString* text = [NSString stringWithFormat:@"%1.2f", xTickNextPoint];
         NSAttributedString *currentText = [[NSAttributedString alloc] initWithString:text attributes:_labelFontAttributes];
         double xOffset = [currentText size].width / 2;
-        NSPoint point = NSMakePoint(x- xOffset, y);
+        NSPoint point = NSMakePoint(x - xOffset, y);
         [currentText drawAtPoint:point];
 
         if (_xLabelHeight < [currentText size].height)

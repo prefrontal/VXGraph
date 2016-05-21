@@ -11,9 +11,9 @@
 		0840FCF21CD7209000CC752F /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 0840FCF11CD7209000CC752F /* main.m */; };
 		0840FCF51CD7209000CC752F /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0840FCF41CD7209000CC752F /* ViewController.m */; };
 		0840FCF71CD7209000CC752F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0840FCF61CD7209000CC752F /* Assets.xcassets */; };
-		0840FCFA1CD7209000CC752F /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0840FCF81CD7209000CC752F /* Main.storyboard */; };
 		0840FD031CD721CF00CC752F /* VXGraphView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0840FD021CD721CF00CC752F /* VXGraphView.m */; };
 		085E8A8D1CDDBE1000F0754E /* VXGraphData.m in Sources */ = {isa = PBXBuildFile; fileRef = 085E8A8C1CDDBE1000F0754E /* VXGraphData.m */; };
+		088C5EDA1CF038DA002A34D1 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 088C5ED81CF038DA002A34D1 /* Main.storyboard */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -24,12 +24,12 @@
 		0840FCF31CD7209000CC752F /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
 		0840FCF41CD7209000CC752F /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
 		0840FCF61CD7209000CC752F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		0840FCF91CD7209000CC752F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		0840FCFB1CD7209000CC752F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		0840FD011CD721CF00CC752F /* VXGraphView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VXGraphView.h; sourceTree = "<group>"; };
 		0840FD021CD721CF00CC752F /* VXGraphView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VXGraphView.m; sourceTree = "<group>"; };
 		085E8A8B1CDDBE1000F0754E /* VXGraphData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VXGraphData.h; sourceTree = "<group>"; };
 		085E8A8C1CDDBE1000F0754E /* VXGraphData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VXGraphData.m; sourceTree = "<group>"; };
+		088C5ED91CF038DA002A34D1 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -71,7 +71,7 @@
 				0840FD011CD721CF00CC752F /* VXGraphView.h */,
 				0840FD021CD721CF00CC752F /* VXGraphView.m */,
 				0840FCF61CD7209000CC752F /* Assets.xcassets */,
-				0840FCF81CD7209000CC752F /* Main.storyboard */,
+				088C5ED81CF038DA002A34D1 /* Main.storyboard */,
 				0840FCFB1CD7209000CC752F /* Info.plist */,
 				0840FCF01CD7209000CC752F /* Supporting Files */,
 			);
@@ -144,7 +144,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				0840FCF71CD7209000CC752F /* Assets.xcassets in Resources */,
-				0840FCFA1CD7209000CC752F /* Main.storyboard in Resources */,
+				088C5EDA1CF038DA002A34D1 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -166,10 +166,10 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXVariantGroup section */
-		0840FCF81CD7209000CC752F /* Main.storyboard */ = {
+		088C5ED81CF038DA002A34D1 /* Main.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
-				0840FCF91CD7209000CC752F /* Base */,
+				088C5ED91CF038DA002A34D1 /* Base */,
 			);
 			name = Main.storyboard;
 			sourceTree = "<group>";

@@ -12,6 +12,8 @@
 
 @interface ViewController ()
 @property (weak) IBOutlet VXGraphView *mainGraph;
+@property (weak) IBOutlet NSTextField *xTickIntervalField;
+@property (weak) IBOutlet NSTextField *yTickIntervalField;
 @end
 
 @implementation ViewController
