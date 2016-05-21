@@ -18,6 +18,12 @@
 @property (nonatomic,assign) double borderLineWidth;
 
 // Axes
+@property (nonatomic,assign) double yAxisMaximum;
+@property (nonatomic,assign) double yAxisMinimum;
+
+@property (nonatomic,assign) double xAxisMaximum;
+@property (nonatomic,assign) double xAxisMinimum;
+
 @property (nonatomic,assign) double axisLineWidth;
 @property (nonatomic,retain) NSColor *axisColor;
 

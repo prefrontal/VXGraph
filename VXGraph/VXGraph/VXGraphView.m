@@ -66,6 +66,12 @@
     _borderLineWidth = 2.0;
     
     // Axis Properties
+    _xAxisMaximum = 10.0;
+    _xAxisMinimum = -10.0;
+
+    _yAxisMaximum = 10.0;
+    _yAxisMinimum = -10.0;
+
     _axisLineWidth = 2.0;
     _axisColor = [NSColor grayColor];
     
@@ -92,7 +98,8 @@
     _graphBorderBottom = _viewBorderBottom + 10;
     _graphBorderLeft   = _viewBorderLeft + 10;
     _graphBorderRight  = _viewBorderRight - 10;
-    
+
+    // Metadata regarding the data
     _xDataMinimum = -10;
     _xDataMaximum = 10;
     _yDataMinimum = -10;
@@ -101,6 +108,11 @@
     _xScaleFactor = 1;
     _yScaleFactor = 1;
 }
+
+// -- Property Methods --------------------------------------------------
+#pragma mark Property Methods
+
+
 
 // -- Graph Drawing Methods ---------------------------------------------
 #pragma mark Graph Drawing Methods
@@ -120,8 +132,8 @@
 
     _xDataMinimum = [_graphData xMinimum];
     _xDataMaximum = [_graphData xMaximum];
-    _yDataMinimum = [_graphData yMinimum] * 1.1;
-    _yDataMaximum = [_graphData yMaximum] * 1.1;
+    _yDataMinimum = [_graphData yMinimum];
+    _yDataMaximum = [_graphData yMaximum];
 
     [self determineYLabelWidth];
     [self determineXLabelHeight];

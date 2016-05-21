@@ -12,6 +12,12 @@
 
 @interface ViewController ()
 @property (weak) IBOutlet VXGraphView *mainGraph;
+
+@property (weak) IBOutlet NSTextField *xAxisMaximumField;
+@property (weak) IBOutlet NSTextField *xAxisMinimumField;
+@property (weak) IBOutlet NSTextField *yAxisMaximumField;
+@property (weak) IBOutlet NSTextField *yAxisMinimumField;
+
 @property (weak) IBOutlet NSTextField *xTickIntervalField;
 @property (weak) IBOutlet NSTextField *yTickIntervalField;
 @end
@@ -38,12 +44,44 @@
     [data setYData:y];
     
     [_mainGraph setGraphData:data];
+
+    [self updateFields];
+}
+
+- (void) updateFields
+{
+    NSString *xAxisMaximum = [NSString stringWithFormat:@"%f", [_mainGraph xAxisMaximum]];
+    [_xAxisMaximumField setStringValue:xAxisMaximum];
+
+    NSString *xAxisMinimum = [NSString stringWithFormat:@"%f", [_mainGraph xAxisMinimum]];
+    [_xAxisMinimumField setStringValue:xAxisMinimum];
+
+    NSString *yAxisMaximum = [NSString stringWithFormat:@"%f", [_mainGraph yAxisMaximum]];
+    [_yAxisMaximumField setStringValue:yAxisMaximum];
+
+    NSString *yAxisMinimum = [NSString stringWithFormat:@"%f", [_mainGraph yAxisMinimum]];
+    [_yAxisMinimumField setStringValue:yAxisMinimum];
+
+    NSString *xTickInterval = [NSString stringWithFormat:@"%f", [_mainGraph xTickInterval]];
+    [_xTickIntervalField setStringValue:xTickInterval];
+
+    NSString *yTickInterval = [NSString stringWithFormat:@"%f", [_mainGraph yTickInterval]];
+    [_yTickIntervalField setStringValue:yTickInterval];
 }
 
 - (void)setRepresentedObject:(id)representedObject {
     [super setRepresentedObject:representedObject];
 
     // Update the view, if already loaded.
+}
+- (IBAction)xAxisTickFieldChange:(id)sender {
+    NSLog(@"Test!");
+}
+- (IBAction)yaxisTickFieldChanged:(id)sender {
+
+}
+- (IBAction)updateValuesButton:(id)sender {
+    [self updateFields];
 }
 
 - (IBAction)action1:(id)sender {
