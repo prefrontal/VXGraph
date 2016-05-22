@@ -10,8 +10,20 @@
 
 @implementation VXGraphData
 
-@synthesize xData;
-@synthesize yData;
+@synthesize xData, yData;
+@synthesize xDataTitle, yDataTitle;
+
+// -- Initialization ---------------------------------------------------------
+
+- (id)init
+{
+    self = [super init];
+    if (self) {
+        xDataTitle = @"TestX";
+        yDataTitle = @"TestY";
+    }
+    return self;
+}
 
 // -- Metadata Methods -------------------------------------------------------
 

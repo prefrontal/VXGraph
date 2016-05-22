@@ -13,8 +13,10 @@
 @property (nonatomic,retain) NSArray* xData;
 @property (nonatomic,retain) NSArray* yData;
 
+@property (nonatomic,retain) NSString *xDataTitle;
+@property (nonatomic,retain) NSString *yDataTitle;
 
-// Metadata Methods
+// Metadata Access Methods
 -(int)count;
 
 -(double)xMaximum;
